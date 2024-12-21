@@ -1,0 +1,418 @@
+
+<html lang="th">
+<head>
+    <meta charset="UTF-8"></meta>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"></meta>
+    <title>ระบบจับฉลากของขวัญ</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet"></link>
+  <link href="https://fonts.googleapis.com" rel="preconnect"></link>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"></link>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&amp;display=swap" rel="stylesheet"></link>
+    <style>
+      body {
+            font-family: 'Kanit', sans-serif;
+        }
+        /* ปรับน้ำหนักฟอนต์ให้เหมาะสม */
+        h1, h2, .font-semibold {
+            font-weight: 500;
+        }
+        .text-xl {
+            font-weight: 400;
+        }
+        input, button {
+            font-weight: 300;
+        }
+        .fade-in { animation: fadeIn 1s ease-in; }
+        .lottery-animation { animation: lottery 3s ease-out; }
+        .confetti { 
+            position: fixed; width: 10px; height: 10px;
+            animation: confetti 4s ease-out; z-index: 1000; 
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: scale(0.5); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        @keyframes lottery {
+            0% { transform: scale(0) rotate(0deg); }
+            30% { transform: scale(1.2) rotate(720deg); }
+            100% { transform: scale(1) rotate(1080deg); }
+        }
+        @keyframes confetti {
+            0% { transform: translateY(-100vh) rotate(0deg); }
+            100% { transform: translateY(100vh) rotate(360deg); }
+        }
+        .hamburger-line {
+            width: 24px;
+            height: 2px;
+            background-color: #4a5568;
+            margin: 5px 0;
+            transition: 0.4s;
+        }
+        .hamburger.open .hamburger-line:nth-child(1) {
+            transform: rotate(-45deg) translate(-5px, 6px);
+        }
+        .hamburger.open .hamburger-line:nth-child(2) {
+            opacity: 0;
+        }
+        .hamburger.open .hamburger-line:nth-child(3) {
+            transform: rotate(45deg) translate(-5px, -6px);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Navigation -->
+        <nav class="bg-white shadow-lg rounded-lg mb-8">
+            <div class="container mx-auto px-6 py-3">
+                <div class="flex justify-between items-center">
+                    <div class="text-xl font-bold text-blue-600">ระบบจับฉลากของขวัญ</div>
+                    <!-- ปุ่มแฮมเบอร์เกอร์ -->
+                    <button class="hamburger md:hidden p-2 rounded hover:bg-gray-100" id="hamburger">
+                        <div class="hamburger-line"></div>
+                        <div class="hamburger-line"></div>
+                        <div class="hamburger-line"></div>
+                    </button>
+                    <!-- เมนูสำหรับจอใหญ่ -->
+                    <div class="hidden md:flex space-x-4">
+                        <button class="nav-btn px-4 py-2 text-gray-700 hover:text-blue-600" onclick="showPage('registerPage')">บันทึกของขวัญ</button>
+                        <button class="nav-btn px-4 py-2 text-gray-700 hover:text-blue-600" onclick="showPage('giftListPage')">รายการของขวัญ</button>
+                        <button class="nav-btn px-4 py-2 text-gray-700 hover:text-blue-600" onclick="showPage('lotteryPage')">จับฉลาก</button>
+                        <button class="nav-btn px-4 py-2 text-gray-700 hover:text-blue-600" onclick="showPage('historyPage')">ประวัติ</button>
+                    </div>
+                </div>
+                <!-- เมนูมือถือ -->
+                <div class="hidden md:hidden mt-4" id="mobileMenu">
+                    <div class="flex flex-col space-y-2">
+                        <button class="px-4 py-2 text-gray-700 hover:bg-gray-100 text-left" onclick="showPage('registerPage')">บันทึกของขวัญ</button>
+                        <button class="px-4 py-2 text-gray-700 hover:bg-gray-100 text-left" onclick="showPage('giftListPage')">รายการของขวัญ</button>
+                        <button class="px-4 py-2 text-gray-700 hover:bg-gray-100 text-left" onclick="showPage('lotteryPage')">จับฉลาก</button>
+                        <button class="px-4 py-2 text-gray-700 hover:bg-gray-100 text-left" onclick="showPage('historyPage')">ประวัติ</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- หน้าบันทึกข้อมูล -->
+        <div class="page bg-white p-6 rounded-lg shadow-lg" id="registerPage">
+            <h2 class="text-2xl font-semibold mb-4">บันทึกข้อมูลของขวัญ</h2>
+            <form class="space-y-4" id="giftForm">
+                <input class="w-full p-2 border rounded" id="name" placeholder="ชื่อผู้ให้ของขวัญ" required="" type="text" />
+                <input accept="image/*" class="w-full p-2 border rounded" id="image" required="" type="file" />
+                <div class="hidden" id="preview">
+                    <img class="w-1/3 mx-auto" id="imagePreview" />
+                </div>
+                <button class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600" type="submit">บันทึก</button>
+            </form>
+        </div>
+
+        <!-- หน้ารายการของขวัญ -->
+        <div class="page hidden" id="giftListPage">
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <div class="flex justify-between mb-4">
+                    <h2 class="text-2xl font-semibold">รายการของขวัญ</h2>
+                    <span>ทั้งหมด: <span class="font-bold text-blue-600" id="totalGifts">0</span> ชิ้น</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="giftList"></div>
+            </div>
+        </div>
+
+        <!-- หน้าจับฉลาก -->
+        <div class="page hidden text-center" id="lotteryPage">
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold mb-4">จับฉลากของขวัญ</h2>
+                <p class="mb-4">เหลือ: <span class="font-bold text-blue-600" id="remainingGifts">0</span> ชิ้น</p>
+                <button class="bg-green-500 text-white px-8 py-3 rounded-lg text-xl hover:bg-green-600" id="drawButton">สุ่มจับฉลาก</button>
+            </div>
+            <div class="hidden mt-8 bg-white p-6 rounded-lg shadow-lg" id="resultDisplay">
+                <div id="animation">
+                    <img class="w-1/3 mx-auto rounded-lg shadow-xl" id="resultImage" />
+                    <h2 class="text-2xl font-bold mt-4" id="resultName"></h2>
+                    <p class="text-xl text-gray-600" id="resultNumber"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- หน้าประวัติ -->
+        <div class="page hidden" id="historyPage">
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold mb-4">ประวัติการจับฉลาก</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="historyList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ข้อมูลตัวอย่าง 10 รายการ
+        let gifts = [
+            {
+                name: "สมชาย ใจดี",
+                image: "https://inwfile.com/s-fm/wvmdp0.jpg",
+                number: 1,
+                date: "17/12/2024, 09:00:00",
+                status: "พร้อมจับฉลาก"
+            },
+            {
+                name: "สมหญิง รักสวย",
+                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQqFuHdU_eRmhS8-HLvTch_WAOaHAuIY1KJF2QeT9Pe-XccvQ_spDRo_c2pzu7PXPedZGQ&usqp=CAU",
+                number: 2,
+                date: "17/12/2024, 09:05:00",
+                status: "พร้อมจับฉลาก"
+            },
+            {
+                name: "มานี มีเงิน",
+                image: "https://www.scimath.org/images/stories/flexicontent/item_12033_field_65/l_2020-12-14_04.26.09.jpg",
+                number: 3,
+                date: "17/12/2024, 09:10:00",
+                status: "พร้อมจับฉลาก"
+            },
+            {
+                name: "สมศรี ดีใจ",
+                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXrH4OnnNiXwQPrUayIfjf6egbffiFwihjag&s",
+                number: 4,
+                date: "17/12/2024, 09:15:00",
+                status: "พร้อมจับฉลาก"
+            },
+            {
+                name: "ประเสริฐ เลิศลอย",
+                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXrH4OnnNiXwQPrUayIfjf6egbffiFwihjag&s",
+                number: 5,
+                date: "17/12/2024, 09:20:00",
+                status: "พร้อมจับฉลาก"
+            },
+            {
+                name: "สุดา ดาวเด่น",
+                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXrH4OnnNiXwQPrUayIfjf6egbffiFwihjag&s",
+                number: 6,
+                date: "17/12/2024, 09:25:00",
+                status: "พร้อมจับฉลาก"
+            },
+            {
+                name: "วีระ มั่งมี",
+                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXrH4OnnNiXwQPrUayIfjf6egbffiFwihjag&s",
+                number: 7,
+                date: "17/12/2024, 09:30:00",
+                status: "พร้อมจับฉลาก"
+            },
+            {
+                name: "นภา สดใส",
+                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXrH4OnnNiXwQPrUayIfjf6egbffiFwihjag&s",
+                number: 8,
+                date: "17/12/2024, 09:35:00",
+                status: "พร้อมจับฉลาก"
+            },
+            {
+                name: "อภิชาติ ชาติชาย",
+                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXrH4OnnNiXwQPrUayIfjf6egbffiFwihjag&s",
+                number: 9,
+                date: "17/12/2024, 09:40:00",
+                status: "พร้อมจับฉลาก"
+            },
+            {
+                name: "วาสนา น่ารัก",
+                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXrH4OnnNiXwQPrUayIfjf6egbffiFwihjag&s",
+                number: 10,
+                date: "17/12/2024, 09:45:00",
+                status: "พร้อมจับฉลาก"
+            }
+        ];
+        let drawnHistory = [];
+        let currentNumber = 11; // เริ่มต้นที่ 11 เพราะมีข้อมูล 10 รายการ
+
+        // Utility functions
+        const $ = id => document.getElementById(id);
+        const updateCount = () => {
+            $('totalGifts').textContent = gifts.length;
+            $('remainingGifts').textContent = gifts.length;
+        };
+
+        // เมนูแฮมเบอร์เกอร์
+        const hamburger = $('hamburger');
+        const mobileMenu = $('mobileMenu');
+
+        hamburger.onclick = () => {
+            hamburger.classList.toggle('open');
+            mobileMenu.classList.toggle('hidden');
+        };
+
+        // ปิดเมนูเมื่อคลิกนอกเมนู
+        document.onclick = (e) => {
+            if (!hamburger.contains(e.target) && !mobileMenu.contains(e.target)) {
+                mobileMenu.classList.add('hidden');
+                hamburger.classList.remove('open');
+            }
+        };
+
+        // แสดงหน้า
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+            $(pageId).classList.remove('hidden');
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.toggle('text-blue-600', btn.onclick.toString().includes(pageId));
+            });
+            mobileMenu.classList.add('hidden');
+            hamburger.classList.remove('open');
+            updateCount();
+            if(pageId === 'giftListPage') updateGiftList();
+            if(pageId === 'historyPage') updateHistory();
+        }
+
+        // แสดงตัวอย่างรูป
+        $('image').onchange = function(e) {
+            const file = e.target.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    $('imagePreview').src = e.target.result;
+                    $('preview').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        // บันทึกของขวัญ
+        $('giftForm').onsubmit = function(e) {
+            e.preventDefault();
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                gifts.push({
+                    name: $('name').value,
+                    image: e.target.result,
+                    number: currentNumber++,
+                    date: new Date().toLocaleString('th-TH'),
+                    status: "พร้อมจับฉลาก"
+                });
+                updateCount();
+                this.reset();
+                $('preview').classList.add('hidden');
+                alert('บันทึกสำเร็จ');
+            }.bind(this);
+            reader.readAsDataURL($('image').files[0]);
+        };
+
+// อัพเดทรายการของขวัญ
+        function updateGiftList() {
+            $('giftList').innerHTML = gifts.map(gift => `
+                <div class="bg-gray-50 p-4 rounded-lg shadow fade-in">
+                    <img src="${gift.image}" class="w-full h-48 object-cover rounded mb-2">
+                    <p class="font-semibold">${gift.name}</p>
+                    <p class="text-gray-600">หมายเลข: ${gift.number}</p>
+                    <p class="text-sm text-gray-500">${gift.date}</p>
+                    <p class="mt-2">
+                        <span class="px-2 py-1 rounded text-sm ${
+                            gift.status === 'พร้อมจับฉลาก' 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-gray-100 text-gray-800'
+                        }">${gift.status}</span>
+                    </p>
+                </div>
+            `).join('');
+        }
+
+        // อัพเดทประวัติ
+        function updateHistory() {
+            $('historyList').innerHTML = drawnHistory.map((gift, index) => `
+                <div class="bg-gray-50 p-4 rounded-lg shadow fade-in">
+                    <img src="${gift.image}" class="w-full h-48 object-cover rounded mb-2">
+                    <p class="font-semibold">${gift.name}</p>
+                    <p class="text-gray-600">หมายเลข: ${gift.number}</p>
+                    <p class="text-sm text-gray-500">จับเมื่อ: ${gift.drawnDate}</p>
+                    <p class="mt-2">
+                        <span class="px-2 py-1 rounded text-sm bg-blue-100 text-blue-800">
+                            ลำดับที่: ${index + 1}
+                        </span>
+                    </p>
+                </div>
+            `).join('');
+        }
+
+        // สร้างคอนเฟ็ตติ
+        function createConfetti() {
+            for(let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = ['#f00','#0f0','#00f','#ff0','#f0f'][Math.floor(Math.random() * 5)];
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 4000);
+            }
+        }
+
+        // จับฉลาก
+        $('drawButton').onclick = function() {
+            if(gifts.length === 0) {
+                alert('ไม่มีของขวัญเหลือแล้ว');
+                return;
+            }
+            
+            this.disabled = true;
+            const resultDisplay = $('resultDisplay');
+            resultDisplay.classList.remove('hidden');
+
+            // เพิ่มการหน่วงเวลาเพื่อให้เห็นเอฟเฟกต์การสุ่ม
+            let shuffleCount = 0;
+            const shuffleInterval = setInterval(() => {
+                const tempIndex = Math.floor(Math.random() * gifts.length);
+                const tempGift = gifts[tempIndex];
+                $('resultImage').src = tempGift.image;
+                $('resultName').textContent = tempGift.name;
+                $('resultNumber').textContent = `หมายเลข: ${tempGift.number}`;
+                
+                shuffleCount++;
+                if (shuffleCount >= 10) { // หยุดหลังจากสุ่ม 10 ครั้ง
+                    clearInterval(shuffleInterval);
+                    showFinalResult();
+                }
+            }, 200);
+
+            function showFinalResult() {
+                const randomIndex = Math.floor(Math.random() * gifts.length);
+                const selectedGift = gifts[randomIndex];
+                selectedGift.drawnDate = new Date().toLocaleString('th-TH');
+                selectedGift.status = 'จับฉลากแล้ว';
+                
+                const animation = $('animation');
+                animation.classList.remove('lottery-animation');
+                void animation.offsetWidth; // Trigger reflow
+                animation.classList.add('lottery-animation');
+
+                $('resultImage').src = selectedGift.image;
+                $('resultName').textContent = selectedGift.name;
+                $('resultNumber').textContent = `หมายเลข: ${selectedGift.number}`;
+
+                drawnHistory.push(selectedGift);
+                gifts.splice(randomIndex, 1);
+                createConfetti();
+                updateCount();
+                updateHistory();
+
+                setTimeout(() => {
+                    $('drawButton').disabled = false;
+                }, 3000);
+            }
+        };
+
+        // โหลดข้อมูลเริ่มต้น
+        window.onload = function() {
+            showPage('registerPage');
+            updateGiftList();
+            updateCount();
+            
+            // เซฟข้อมูลก่อนรีเฟรช
+            window.addEventListener('beforeunload', () => {
+                localStorage.setItem('gifts', JSON.stringify(gifts));
+                localStorage.setItem('drawnHistory', JSON.stringify(drawnHistory));
+                localStorage.setItem('currentNumber', currentNumber);
+            });
+
+            // โหลดข้อมูลจาก localStorage ถ้ามี
+            const savedGifts = localStorage.getItem('gifts');
+            const savedHistory = localStorage.getItem('drawnHistory');
+            const savedNumber = localStorage.getItem('currentNumber');
+
+            if (savedGifts) gifts = JSON.parse(savedGifts);
+            if (savedHistory) drawnHistory = JSON.parse(savedHistory);
+            if (savedNumber) currentNumber = parseInt(savedNumber);
+        };
+    </script>
+</body>
+</html>
