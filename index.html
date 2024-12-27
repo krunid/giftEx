@@ -131,6 +131,96 @@
             0% { transform: translateX(100%); opacity: 0; }
             100% { transform: translateX(0); opacity: 1; }
         }
+        // แสดงสถานะการบันทึก
+        function showSavingState(form, show = true) {
+            if (show) {
+                form.classList.add('form-saving');
+                // เพิ่ม div แสดงสถานะการบันทึก
+                const saveProgress = document.createElement('div');
+                saveProgress.className = 'save-progress';
+                saveProgress.innerHTML = `
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <div class="loading-spinner mx-auto mb-3"></div>
+                        <p class="text-gray-600">กำลังบันทึกข้อมูล...</p>
+                    </div>
+                `;
+                form.appendChild(saveProgress);
+            } else {
+                form.classList.remove('form-saving');
+                const saveProgress = form.querySelector('.save-progress');
+                if (saveProgress) {
+                    saveProgress.remove();
+                }
+            }
+        }
+
+        // บันทึกของขวัญ
+        $('giftForm').onsubmit = function(e) {
+            e.preventDefault();
+            const form = this;
+            const submitButton = form.querySelector('button[type="submit"]');
+            
+            // ตรวจสอบว่ากำลังบันทึกอยู่หรือไม่
+            if (submitButton.disabled || form.classList.contains('form-saving')) {
+                return;
+            }
+
+            // เริ่มสถานะการบันทึก
+            submitButton.disabled = true;
+            showSavingState(form, true);
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    setTimeout(() => {
+                        gifts.push({
+                            name: $('name').value,
+                            image: e.target.result,
+                            number: currentNumber++,
+                            date: new Date().toLocaleString('th-TH'),
+                            status: "พร้อมจับฉลาก"
+                        });
+                        updateCount();
+                        saveToLocalStorage();
+
+                        // แสดง animation เมื่อบันทึกสำเร็จ
+                        showSavingState(form, false);
+                        submitButton.disabled = false;
+                        
+                        // แสดง notification
+                        showNotification('บันทึกข้อมูลสำเร็จ');
+                        
+                        // รีเซ็ตฟอร์มและซ่อนตัวอย่างรูป
+                        form.reset();
+                        $('preview').classList.add('hidden');
+
+                        // รอให้ animation จบก่อนแล้วกลับไปหน้าบันทึก
+                        setTimeout(() => {
+                            showPage('registerPage');
+                        }, 1000);
+                    }, 1500); // เพิ่มเวลาให้เห็น animation ชัดขึ้น
+                } catch (error) {
+                    console.error('เกิดข้อผิดพลาด:', error);
+                    showSavingState(form, false);
+                    submitButton.disabled = false;
+                    showNotification('เกิดข้อผิดพลาด กรุณาลองใหม่', 'error');
+                }
+            };
+
+            reader.onerror = function() {
+                showSavingState(form, false);
+                submitButton.disabled = false;
+                showNotification('เกิดข้อผิดพลาดในการอ่านไฟล์ กรุณาลองใหม่', 'error');
+            };
+
+            try {
+                reader.readAsDataURL($('image').files[0]);
+            } catch (error) {
+                showSavingState(form, false);
+                submitButton.disabled = false;
+                showNotification('กรุณาเลือกไฟล์รูปภาพ', 'error');
+            }
+        };
     </style>
 </head>
 <body class="bg-gray-100">
@@ -717,7 +807,96 @@
                 }, 3000);
             }
         };
+// แสดงสถานะการบันทึก
+        function showSavingState(form, show = true) {
+            if (show) {
+                form.classList.add('form-saving');
+                // เพิ่ม div แสดงสถานะการบันทึก
+                const saveProgress = document.createElement('div');
+                saveProgress.className = 'save-progress';
+                saveProgress.innerHTML = `
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <div class="loading-spinner mx-auto mb-3"></div>
+                        <p class="text-gray-600">กำลังบันทึกข้อมูล...</p>
+                    </div>
+                `;
+                form.appendChild(saveProgress);
+            } else {
+                form.classList.remove('form-saving');
+                const saveProgress = form.querySelector('.save-progress');
+                if (saveProgress) {
+                    saveProgress.remove();
+                }
+            }
+        }
 
+        // บันทึกของขวัญ
+        $('giftForm').onsubmit = function(e) {
+            e.preventDefault();
+            const form = this;
+            const submitButton = form.querySelector('button[type="submit"]');
+            
+            // ตรวจสอบว่ากำลังบันทึกอยู่หรือไม่
+            if (submitButton.disabled || form.classList.contains('form-saving')) {
+                return;
+            }
+
+            // เริ่มสถานะการบันทึก
+            submitButton.disabled = true;
+            showSavingState(form, true);
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    setTimeout(() => {
+                        gifts.push({
+                            name: $('name').value,
+                            image: e.target.result,
+                            number: currentNumber++,
+                            date: new Date().toLocaleString('th-TH'),
+                            status: "พร้อมจับฉลาก"
+                        });
+                        updateCount();
+                        saveToLocalStorage();
+
+                        // แสดง animation เมื่อบันทึกสำเร็จ
+                        showSavingState(form, false);
+                        submitButton.disabled = false;
+                        
+                        // แสดง notification
+                        showNotification('บันทึกข้อมูลสำเร็จ');
+                        
+                        // รีเซ็ตฟอร์มและซ่อนตัวอย่างรูป
+                        form.reset();
+                        $('preview').classList.add('hidden');
+
+                        // รอให้ animation จบก่อนแล้วกลับไปหน้าบันทึก
+                        setTimeout(() => {
+                            showPage('registerPage');
+                        }, 1000);
+                    }, 1500); // เพิ่มเวลาให้เห็น animation ชัดขึ้น
+                } catch (error) {
+                    console.error('เกิดข้อผิดพลาด:', error);
+                    showSavingState(form, false);
+                    submitButton.disabled = false;
+                    showNotification('เกิดข้อผิดพลาด กรุณาลองใหม่', 'error');
+                }
+            };
+
+            reader.onerror = function() {
+                showSavingState(form, false);
+                submitButton.disabled = false;
+                showNotification('เกิดข้อผิดพลาดในการอ่านไฟล์ กรุณาลองใหม่', 'error');
+            };
+
+            try {
+                reader.readAsDataURL($('image').files[0]);
+            } catch (error) {
+                showSavingState(form, false);
+                submitButton.disabled = false;
+                showNotification('กรุณาเลือกไฟล์รูปภาพ', 'error');
+            }
+        };
         // โหลดข้อมูลเริ่มต้น
         window.onload = function() {
             const savedGifts = localStorage.getItem('gifts');
