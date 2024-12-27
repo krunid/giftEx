@@ -21,11 +21,18 @@
         input, button {
             font-weight: 300;
         }
-        .fade-in { animation: fadeIn 1s ease-in; }
-        .lottery-animation { animation: lottery 3s ease-out; }
+        .fade-in { 
+            animation: fadeIn 1s ease-in; 
+        }
+        .lottery-animation { 
+            animation: lottery 3s ease-out; 
+        }
         .confetti { 
-            position: fixed; width: 10px; height: 10px;
-            animation: confetti 4s ease-out; z-index: 1000; 
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            animation: confetti 4s ease-out;
+            z-index: 1000; 
         }
 
         /* Loading Animation */
@@ -70,29 +77,38 @@
             transform: rotate(-45deg);
         }
 
-        @keyframes fadeIn {
-            0% { opacity: 0; transform: scale(0.5); }
-            100% { opacity: 1; transform: scale(1); }
+        /* Form Saving Animation */
+        .form-saving {
+            position: relative;
         }
-        @keyframes lottery {
-            0% { transform: scale(0) rotate(0deg); }
-            30% { transform: scale(1.2) rotate(720deg); }
-            100% { transform: scale(1) rotate(1080deg); }
-        }
-        @keyframes confetti {
-            0% { transform: translateY(-100vh) rotate(0deg); }
-            100% { transform: translateY(100vh) rotate(360deg); }
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        @keyframes successScale {
-            0% { transform: scale(0); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
+        
+        .form-saving::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            border-radius: 0.5rem;
+            animation: formFadeIn 0.3s ease-in;
         }
 
+        .save-progress {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 11;
+            text-align: center;
+            animation: bounceIn 0.5s ease-out;
+        }
+
+        /* Hamburger Menu */
         .hamburger-line {
             width: 24px;
             height: 2px;
@@ -110,7 +126,7 @@
             transform: rotate(45deg) translate(-5px, -6px);
         }
 
-        /* Save Success Animation */
+        /* Save Success Notification */
         .save-success {
             position: fixed;
             top: 20px;
@@ -127,100 +143,50 @@
             animation: slideIn 0.5s ease-out;
         }
 
+        /* Animations */
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: scale(0.5); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes lottery {
+            0% { transform: scale(0) rotate(0deg); }
+            30% { transform: scale(1.2) rotate(720deg); }
+            100% { transform: scale(1) rotate(1080deg); }
+        }
+
+        @keyframes confetti {
+            0% { transform: translateY(-100vh) rotate(0deg); }
+            100% { transform: translateY(100vh) rotate(360deg); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes successScale {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes formFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes bounceIn {
+            0% { transform: translate(-50%, -50%) scale(0.3); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+            70% { transform: translate(-50%, -50%) scale(0.9); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+
         @keyframes slideIn {
             0% { transform: translateX(100%); opacity: 0; }
             100% { transform: translateX(0); opacity: 1; }
         }
-        // แสดงสถานะการบันทึก
-        function showSavingState(form, show = true) {
-            if (show) {
-                form.classList.add('form-saving');
-                // เพิ่ม div แสดงสถานะการบันทึก
-                const saveProgress = document.createElement('div');
-                saveProgress.className = 'save-progress';
-                saveProgress.innerHTML = `
-                    <div class="bg-white p-6 rounded-lg shadow-lg">
-                        <div class="loading-spinner mx-auto mb-3"></div>
-                        <p class="text-gray-600">กำลังบันทึกข้อมูล...</p>
-                    </div>
-                `;
-                form.appendChild(saveProgress);
-            } else {
-                form.classList.remove('form-saving');
-                const saveProgress = form.querySelector('.save-progress');
-                if (saveProgress) {
-                    saveProgress.remove();
-                }
-            }
-        }
-
-        // บันทึกของขวัญ
-        $('giftForm').onsubmit = function(e) {
-            e.preventDefault();
-            const form = this;
-            const submitButton = form.querySelector('button[type="submit"]');
-            
-            // ตรวจสอบว่ากำลังบันทึกอยู่หรือไม่
-            if (submitButton.disabled || form.classList.contains('form-saving')) {
-                return;
-            }
-
-            // เริ่มสถานะการบันทึก
-            submitButton.disabled = true;
-            showSavingState(form, true);
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    setTimeout(() => {
-                        gifts.push({
-                            name: $('name').value,
-                            image: e.target.result,
-                            number: currentNumber++,
-                            date: new Date().toLocaleString('th-TH'),
-                            status: "พร้อมจับฉลาก"
-                        });
-                        updateCount();
-                        saveToLocalStorage();
-
-                        // แสดง animation เมื่อบันทึกสำเร็จ
-                        showSavingState(form, false);
-                        submitButton.disabled = false;
-                        
-                        // แสดง notification
-                        showNotification('บันทึกข้อมูลสำเร็จ');
-                        
-                        // รีเซ็ตฟอร์มและซ่อนตัวอย่างรูป
-                        form.reset();
-                        $('preview').classList.add('hidden');
-
-                        // รอให้ animation จบก่อนแล้วกลับไปหน้าบันทึก
-                        setTimeout(() => {
-                            showPage('registerPage');
-                        }, 1000);
-                    }, 1500); // เพิ่มเวลาให้เห็น animation ชัดขึ้น
-                } catch (error) {
-                    console.error('เกิดข้อผิดพลาด:', error);
-                    showSavingState(form, false);
-                    submitButton.disabled = false;
-                    showNotification('เกิดข้อผิดพลาด กรุณาลองใหม่', 'error');
-                }
-            };
-
-            reader.onerror = function() {
-                showSavingState(form, false);
-                submitButton.disabled = false;
-                showNotification('เกิดข้อผิดพลาดในการอ่านไฟล์ กรุณาลองใหม่', 'error');
-            };
-
-            try {
-                reader.readAsDataURL($('image').files[0]);
-            } catch (error) {
-                showSavingState(form, false);
-                submitButton.disabled = false;
-                showNotification('กรุณาเลือกไฟล์รูปภาพ', 'error');
-            }
-        };
     </style>
 </head>
 <body class="bg-gray-100">
@@ -304,7 +270,9 @@
             <div class="bg-white p-6 rounded-lg shadow-lg">
                 <h2 class="text-2xl font-semibold mb-4">จับฉลากของขวัญ</h2>
                 <p class="mb-4">เหลือ: <span class="font-bold text-blue-600" id="remainingGifts">0</span> ชิ้น</p>
-                <button class="bg-green-500 text-white px-8 py-3 rounded-lg text-xl hover:bg-green-600" id="drawButton">สุ่มจับฉลาก</button>
+                <button class="bg-green-500 text-white px-8 py-3 rounded-lg text-xl hover:bg-green-600" id="drawButton">
+                    สุ่มจับฉลาก
+                </button>
             </div>
             <div class="hidden mt-8 bg-white p-6 rounded-lg shadow-lg" id="resultDisplay">
                 <div id="animation">
@@ -349,62 +317,7 @@
                 date: "17/12/2024, 09:05:00",
                 status: "พร้อมจับฉลาก"
             },
-            {
-                name: "มานี มีเงิน",
-                image: "https://www.scimath.org/images/stories/flexicontent/item_12033_field_65/l_2020-12-14_04.26.09.jpg",
-                number: 3,
-                date: "17/12/2024, 09:10:00",
-                status: "พร้อมจับฉลาก"
-            },
-            {
-                name: "สมศรี ดีใจ",
-                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXrH4OnnNiXwQPrUayIfjf6egbffiFwihjag&s",
-                number: 4,
-                date: "17/12/2024, 09:15:00",
-                status: "พร้อมจับฉลาก"
-            },
-            {
-                name: "ประเสริฐ เลิศลอย",
-                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXrH4OnnNiXwQPrUayIfjf6egbffiFwihjag&s",
-                number: 5,
-                date: "17/12/2024, 09:20:00",
-                status: "พร้อมจับฉลาก"
-            },
-            {
-                name: "สุดา ดาวเด่น",
-                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXrH4OnnNiXwQPrUayIfjf6egbffiFwihjag&s",
-                number: 6,
-                date: "17/12/2024, 09:25:00",
-                status: "พร้อมจับฉลาก"
-            },
-            {
-                name: "วีระ มั่งมี",
-                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXrH4OnnNiXwQPrUayIfjf6egbffiFwihjag&s",
-                number: 7,
-                date: "17/12/2024, 09:30:00",
-                status: "พร้อมจับฉลาก"
-            },
-            {
-                name: "นภา สดใส",
-                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXrH4OnnNiXwQPrUayIfjf6egbffiFwihjag&s",
-                number: 8,
-                date: "17/12/2024, 09:35:00",
-                status: "พร้อมจับฉลาก"
-            },
-            {
-                name: "อภิชาติ ชาติชาย",
-                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXrH4OnnNiXwQPrUayIfjf6egbffiFwihjag&s",
-                number: 9,
-                date: "17/12/2024, 09:40:00",
-                status: "พร้อมจับฉลาก"
-            },
-            {
-                name: "วาสนา น่ารัก",
-                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXrH4OnnNiXwQPrUayIfjf6egbffiFwihjag&s",
-                number: 10,
-                date: "17/12/2024, 09:45:00",
-                status: "พร้อมจับฉลาก"
-            }
+            // ... ข้อมูลตัวอย่างอื่นๆ ...
         ];
 
         let gifts = [];
@@ -425,15 +338,27 @@
             localStorage.setItem('currentNumber', currentNumber);
         };
 
+        // ตรวจสอบและอัพเดทการแสดงปุ่ม
+        function updateButtonVisibility() {
+            const loadTestButton = document.querySelector('[onclick="loadTestGift()"]');
+            const resetButton = document.querySelector('[onclick="resetToSampleData()"]');
+            
+            if (loadTestButton) {
+                loadTestButton.style.display = gifts.length > 0 ? 'none' : 'flex';
+            }
+            
+            if (resetButton) {
+                resetButton.style.display = gifts.length > 0 ? 'block' : 'none';
+            }
+        }
+
         // แสดง notification
         function showNotification(message, type = 'success') {
-            // ลบ notification เก่าถ้ามี
             const oldNotification = document.querySelector('.save-success');
             if (oldNotification) {
                 oldNotification.remove();
             }
 
-            // สร้าง notification ใหม่
             const notification = document.createElement('div');
             notification.className = 'save-success';
             notification.innerHTML = `
@@ -441,116 +366,66 @@
                 <span>${message}</span>
             `;
 
-            // เพิ่มเข้าไปใน body
             document.body.appendChild(notification);
 
-            // ลบออกหลังจาก 3 วินาที
             setTimeout(() => {
                 notification.style.animation = 'slideIn 0.5s ease-out reverse';
                 setTimeout(() => notification.remove(), 500);
             }, 3000);
         }
 
-// อัพเดทปุ่มขณะบันทึก
-        function updateButtonState(button, loading = true) {
-            if (!button) return null;
-
-            // เก็บข้อมูลเดิมของปุ่มไว้
-            const buttonState = {
-                originalContent: button.innerHTML,
-                originalDisabled: button.disabled
-            };
-
-            if (loading) {
-                button.disabled = true;
-                button.innerHTML = `
-                    <div class="flex items-center justify-center">
-                        <div class="loading-spinner mr-2"></div>
-                        <span>กำลังดำเนินการ...</span>
+        // แสดงสถานะการบันทึก
+        function showSavingState(form, show = true) {
+            if (show) {
+                form.classList.add('form-saving');
+                const saveProgress = document.createElement('div');
+                saveProgress.className = 'save-progress';
+                saveProgress.innerHTML = `
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <div class="loading-spinner mx-auto mb-3"></div>
+                        <p class="text-gray-600">กำลังบันทึกข้อมูล...</p>
                     </div>
                 `;
+                form.appendChild(saveProgress);
             } else {
-                button.disabled = buttonState.originalDisabled;
-                button.innerHTML = buttonState.originalContent;
+                form.classList.remove('form-saving');
+                const saveProgress = form.querySelector('.save-progress');
+                if (saveProgress) {
+                    saveProgress.remove();
+                }
             }
-
-            return buttonState;
         }
 
         // ฟังก์ชันโหลดข้อมูลทดสอบ
         function loadTestGift() {
             const button = event.currentTarget;
-            if (button.disabled) return; // ป้องกันการกดซ้ำ
+            if (button.disabled) return;
 
-            const buttonState = updateButtonState(button, true);
-            if (!buttonState) return;
+            button.disabled = true;
+            showSavingState(button.closest('.page'), true);
 
-            try {
-                setTimeout(() => {
+            setTimeout(() => {
+                try {
                     const gift = { ...testGift, number: currentNumber++ };
                     gifts.push(gift);
                     updateGiftList();
                     updateCount();
                     saveToLocalStorage();
                     
-                    updateButtonState(button, false);
+                    showSavingState(button.closest('.page'), false);
+                    button.disabled = false;
                     showNotification('เพิ่มข้อมูลทดสอบสำเร็จ');
+                    
+                    updateButtonVisibility();
                     showPage('giftListPage');
-                }, 1000);
-            } catch (error) {
-                console.error('เกิดข้อผิดพลาด:', error);
-                updateButtonState(button, false);
-                showNotification('เกิดข้อผิดพลาด กรุณาลองใหม่', 'error');
-            }
-        }
-
-        // บันทึกของขวัญ
-        $('giftForm').onsubmit = function(e) {
-            e.preventDefault();
-            const submitButton = this.querySelector('button[type="submit"]');
-            if (submitButton.disabled) return; // ป้องกันการกดซ้ำ
-
-            const buttonState = updateButtonState(submitButton, true);
-            if (!buttonState) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    setTimeout(() => {
-                        gifts.push({
-                            name: $('name').value,
-                            image: e.target.result,
-                            number: currentNumber++,
-                            date: new Date().toLocaleString('th-TH'),
-                            status: "พร้อมจับฉลาก"
-                        });
-                        updateCount();
-                        saveToLocalStorage();
-                        this.reset();
-                        $('preview').classList.add('hidden');
-                        
-                        updateButtonState(submitButton, false);
-                        showNotification('บันทึกข้อมูลสำเร็จ');
-                    }, 1000);
                 } catch (error) {
                     console.error('เกิดข้อผิดพลาด:', error);
-                    updateButtonState(submitButton, false);
+                    showSavingState(button.closest('.page'), false);
+                    button.disabled = false;
                     showNotification('เกิดข้อผิดพลาด กรุณาลองใหม่', 'error');
                 }
-            }.bind(this);
-
-            reader.onerror = function() {
-                updateButtonState(submitButton, false);
-                showNotification('เกิดข้อผิดพลาดในการอ่านไฟล์ กรุณาลองใหม่', 'error');
-            };
-
-            try {
-                reader.readAsDataURL($('image').files[0]);
-            } catch (error) {
-                updateButtonState(submitButton, false);
-                showNotification('กรุณาเลือกไฟล์รูปภาพ', 'error');
-            }
-        };
+            }, 1000);
+        }
 
         // เพิ่มฟังก์ชันการลบของขวัญ
         function deleteGift(number) {
@@ -561,6 +436,7 @@
                     updateGiftList();
                     updateCount();
                     saveToLocalStorage();
+                    updateButtonVisibility();
                     showNotification('ลบของขวัญสำเร็จ');
                 }
             }
@@ -579,33 +455,16 @@
         // เพิ่มฟังก์ชันรีเซ็ตเป็นข้อมูลตัวอย่าง
         function resetToSampleData() {
             if (confirm('คุณต้องการรีเซ็ตเป็นข้อมูลตัวอย่างใช่หรือไม่? (ข้อมูลปัจจุบันจะหายไป)')) {
-                gifts = JSON.parse(JSON.stringify(sampleGifts)); // Deep clone
+                gifts = JSON.parse(JSON.stringify(sampleGifts));
                 drawnHistory = [];
                 currentNumber = 11;
                 updateGiftList();
                 updateHistory();
                 updateCount();
                 saveToLocalStorage();
+                updateButtonVisibility();
                 showNotification('รีเซ็ตข้อมูลสำเร็จ');
             }
-        }
-
-        // ฟังก์ชันโหลดข้อมูลทดสอบ
-        function loadTestGift() {
-            const button = event.currentTarget;
-            const originalContent = updateButtonState(button, true);
-
-            setTimeout(() => {
-                const gift = { ...testGift, number: currentNumber++ };
-                gifts.push(gift);
-                updateGiftList();
-                updateCount();
-                saveToLocalStorage();
-                
-                updateButtonState(button, false);
-                showNotification('เพิ่มข้อมูลทดสอบสำเร็จ');
-                showPage('giftListPage');
-            }, 1000);
         }
 
         // อัพเดทรายการของขวัญ
@@ -680,65 +539,8 @@
             updateCount();
             if(pageId === 'giftListPage') updateGiftList();
             if(pageId === 'historyPage') updateHistory();
+            updateButtonVisibility();
         }
-
-        // เมนูแฮมเบอร์เกอร์
-        const hamburger = $('hamburger');
-        const mobileMenu = $('mobileMenu');
-
-        hamburger.onclick = () => {
-            hamburger.classList.toggle('open');
-            mobileMenu.classList.toggle('hidden');
-        };
-
-        // ปิดเมนูเมื่อคลิกนอกเมนู
-        document.onclick = (e) => {
-            if (!hamburger.contains(e.target) && !mobileMenu.contains(e.target)) {
-                mobileMenu.classList.add('hidden');
-                hamburger.classList.remove('open');
-            }
-        };
-
-        // แสดงตัวอย่างรูป
-        $('image').onchange = function(e) {
-            const file = e.target.files[0];
-            if(file) {
-                const reader = new FileReader();
-                reader.onload = e => {
-                    $('imagePreview').src = e.target.result;
-                    $('preview').classList.remove('hidden');
-                };
-                reader.readAsDataURL(file);
-            }
-        };
-
-        // บันทึกของขวัญ
-        $('giftForm').onsubmit = function(e) {
-            e.preventDefault();
-            const submitButton = this.querySelector('button[type="submit"]');
-            const originalContent = updateButtonState(submitButton, true);
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                setTimeout(() => {
-                    gifts.push({
-                        name: $('name').value,
-                        image: e.target.result,
-                        number: currentNumber++,
-                        date: new Date().toLocaleString('th-TH'),
-                        status: "พร้อมจับฉลาก"
-                    });
-                    updateCount();
-                    saveToLocalStorage();
-                    this.reset();
-                    $('preview').classList.add('hidden');
-                    
-                    updateButtonState(submitButton, false);
-                    showNotification('บันทึกข้อมูลสำเร็จ');
-                }, 1000);
-            }.bind(this);
-            reader.readAsDataURL($('image').files[0]);
-        };
 
         // สร้างคอนเฟ็ตติ
         function createConfetti() {
@@ -763,7 +565,6 @@
             const resultDisplay = $('resultDisplay');
             resultDisplay.classList.remove('hidden');
 
-            // เพิ่มการหน่วงเวลาเพื่อให้เห็นเอฟเฟกต์การสุ่ม
             let shuffleCount = 0;
             const shuffleInterval = setInterval(() => {
                 const tempIndex = Math.floor(Math.random() * gifts.length);
@@ -800,6 +601,7 @@
                 updateCount();
                 updateHistory();
                 saveToLocalStorage();
+                updateButtonVisibility();
 
                 setTimeout(() => {
                     $('drawButton').disabled = false;
@@ -807,28 +609,36 @@
                 }, 3000);
             }
         };
-// แสดงสถานะการบันทึก
-        function showSavingState(form, show = true) {
-            if (show) {
-                form.classList.add('form-saving');
-                // เพิ่ม div แสดงสถานะการบันทึก
-                const saveProgress = document.createElement('div');
-                saveProgress.className = 'save-progress';
-                saveProgress.innerHTML = `
-                    <div class="bg-white p-6 rounded-lg shadow-lg">
-                        <div class="loading-spinner mx-auto mb-3"></div>
-                        <p class="text-gray-600">กำลังบันทึกข้อมูล...</p>
-                    </div>
-                `;
-                form.appendChild(saveProgress);
-            } else {
-                form.classList.remove('form-saving');
-                const saveProgress = form.querySelector('.save-progress');
-                if (saveProgress) {
-                    saveProgress.remove();
-                }
+
+        // เมนูแฮมเบอร์เกอร์
+        const hamburger = $('hamburger');
+        const mobileMenu = $('mobileMenu');
+
+        hamburger.onclick = () => {
+            hamburger.classList.toggle('open');
+            mobileMenu.classList.toggle('hidden');
+        };
+
+        // ปิดเมนูเมื่อคลิกนอกเมนู
+        document.onclick = (e) => {
+            if (!hamburger.contains(e.target) && !mobileMenu.contains(e.target)) {
+                mobileMenu.classList.add('hidden');
+                hamburger.classList.remove('open');
             }
-        }
+        };
+
+        // แสดงตัวอย่างรูป
+        $('image').onchange = function(e) {
+            const file = e.target.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    $('imagePreview').src = e.target.result;
+                    $('preview').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        };
 
         // บันทึกของขวัญ
         $('giftForm').onsubmit = function(e) {
@@ -836,12 +646,10 @@
             const form = this;
             const submitButton = form.querySelector('button[type="submit"]');
             
-            // ตรวจสอบว่ากำลังบันทึกอยู่หรือไม่
             if (submitButton.disabled || form.classList.contains('form-saving')) {
                 return;
             }
 
-            // เริ่มสถานะการบันทึก
             submitButton.disabled = true;
             showSavingState(form, true);
 
@@ -858,23 +666,19 @@
                         });
                         updateCount();
                         saveToLocalStorage();
+                        updateButtonVisibility();
 
-                        // แสดง animation เมื่อบันทึกสำเร็จ
                         showSavingState(form, false);
                         submitButton.disabled = false;
-                        
-                        // แสดง notification
                         showNotification('บันทึกข้อมูลสำเร็จ');
-                        
-                        // รีเซ็ตฟอร์มและซ่อนตัวอย่างรูป
+
                         form.reset();
                         $('preview').classList.add('hidden');
 
-                        // รอให้ animation จบก่อนแล้วกลับไปหน้าบันทึก
                         setTimeout(() => {
                             showPage('registerPage');
                         }, 1000);
-                    }, 1500); // เพิ่มเวลาให้เห็น animation ชัดขึ้น
+                    }, 1500);
                 } catch (error) {
                     console.error('เกิดข้อผิดพลาด:', error);
                     showSavingState(form, false);
@@ -890,13 +694,18 @@
             };
 
             try {
-                reader.readAsDataURL($('image').files[0]);
+                const file = $('image').files[0];
+                if (!file) {
+                    throw new Error('ไม่พบไฟล์รูปภาพ');
+                }
+                reader.readAsDataURL(file);
             } catch (error) {
                 showSavingState(form, false);
                 submitButton.disabled = false;
                 showNotification('กรุณาเลือกไฟล์รูปภาพ', 'error');
             }
         };
+
         // โหลดข้อมูลเริ่มต้น
         window.onload = function() {
             const savedGifts = localStorage.getItem('gifts');
@@ -910,8 +719,8 @@
             showPage('registerPage');
             updateGiftList();
             updateCount();
+            updateButtonVisibility();
         };
-
     </script>
 </body>
 </html>
