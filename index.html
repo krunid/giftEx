@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
@@ -26,6 +27,49 @@
             position: fixed; width: 10px; height: 10px;
             animation: confetti 4s ease-out; z-index: 1000; 
         }
+
+        /* Loading Animation */
+        .loading-spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Success Animation */
+        .success-checkmark {
+            width: 24px;
+            height: 24px;
+            position: relative;
+            display: inline-block;
+            animation: successScale 0.3s ease-in-out;
+        }
+
+        .success-checkmark::before,
+        .success-checkmark::after {
+            content: '';
+            position: absolute;
+            background: white;
+        }
+
+        .success-checkmark::before {
+            width: 3px;
+            height: 9px;
+            left: 6px;
+            top: 10px;
+            transform: rotate(45deg);
+        }
+
+        .success-checkmark::after {
+            width: 3px;
+            height: 15px;
+            left: 12px;
+            top: 5px;
+            transform: rotate(-45deg);
+        }
+
         @keyframes fadeIn {
             0% { opacity: 0; transform: scale(0.5); }
             100% { opacity: 1; transform: scale(1); }
@@ -39,6 +83,16 @@
             0% { transform: translateY(-100vh) rotate(0deg); }
             100% { transform: translateY(100vh) rotate(360deg); }
         }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes successScale {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
         .hamburger-line {
             width: 24px;
             height: 2px;
@@ -54,6 +108,28 @@
         }
         .hamburger.open .hamburger-line:nth-child(3) {
             transform: rotate(45deg) translate(-5px, -6px);
+        }
+
+        /* Save Success Animation */
+        .save-success {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #48bb78;
+            color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 1000;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            0% { transform: translateX(100%); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
         }
     </style>
 </head>
@@ -89,14 +165,30 @@
 
         <!-- หน้าบันทึกข้อมูล -->
         <div class="page bg-white p-6 rounded-lg shadow-lg" id="registerPage">
-            <h2 class="text-2xl font-semibold mb-4">บันทึกข้อมูลของขวัญ</h2>
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-semibold">บันทึกข้อมูลของขวัญ</h2>
+                <div class="flex space-x-2">
+                    <button onclick="loadTestGift()" 
+                            class="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586L7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z" clip-rule="evenodd" />
+                        </svg>
+                        โหลดตัวอย่าง
+                    </button>
+                </div>
+            </div>
             <form class="space-y-4" id="giftForm">
                 <input class="w-full p-2 border rounded" id="name" type="text" placeholder="ชื่อผู้ให้ของขวัญ" required>
                 <input class="w-full p-2 border rounded" id="image" type="file" accept="image/*" required>
                 <div class="hidden" id="preview">
                     <img class="w-1/3 mx-auto" id="imagePreview">
                 </div>
-                <button class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600" type="submit">บันทึก</button>
+                <button class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 flex items-center justify-center" type="submit">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                    </svg>
+                    บันทึก
+                </button>
             </form>
         </div>
 
@@ -143,6 +235,14 @@
     </div>
 
     <script>
+        // ข้อมูลตัวอย่างสำหรับการทดสอบ
+        let testGift = {
+            name: "ทดสอบระบบ",
+            image: "https://www.scimath.org/images/stories/flexicontent/item_12033_field_65/l_2020-12-14_04.26.09.jpg",
+            date: new Date().toLocaleString('th-TH'),
+            status: "พร้อมจับฉลาก"
+        };
+
         // ข้อมูลตัวอย่าง
         let sampleGifts = [
             {
@@ -166,7 +266,55 @@
                 date: "17/12/2024, 09:10:00",
                 status: "พร้อมจับฉลาก"
             },
-            // ... (ข้อมูลตัวอย่างอื่นๆ จาก array เดิม)
+            {
+                name: "สมศรี ดีใจ",
+                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXrH4OnnNiXwQPrUayIfjf6egbffiFwihjag&s",
+                number: 4,
+                date: "17/12/2024, 09:15:00",
+                status: "พร้อมจับฉลาก"
+            },
+            {
+                name: "ประเสริฐ เลิศลอย",
+                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXrH4OnnNiXwQPrUayIfjf6egbffiFwihjag&s",
+                number: 5,
+                date: "17/12/2024, 09:20:00",
+                status: "พร้อมจับฉลาก"
+            },
+            {
+                name: "สุดา ดาวเด่น",
+                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXrH4OnnNiXwQPrUayIfjf6egbffiFwihjag&s",
+                number: 6,
+                date: "17/12/2024, 09:25:00",
+                status: "พร้อมจับฉลาก"
+            },
+            {
+                name: "วีระ มั่งมี",
+                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXrH4OnnNiXwQPrUayIfjf6egbffiFwihjag&s",
+                number: 7,
+                date: "17/12/2024, 09:30:00",
+                status: "พร้อมจับฉลาก"
+            },
+            {
+                name: "นภา สดใส",
+                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXrH4OnnNiXwQPrUayIfjf6egbffiFwihjag&s",
+                number: 8,
+                date: "17/12/2024, 09:35:00",
+                status: "พร้อมจับฉลาก"
+            },
+            {
+                name: "อภิชาติ ชาติชาย",
+                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXrH4OnnNiXwQPrUayIfjf6egbffiFwihjag&s",
+                number: 9,
+                date: "17/12/2024, 09:40:00",
+                status: "พร้อมจับฉลาก"
+            },
+            {
+                name: "วาสนา น่ารัก",
+                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXrH4OnnNiXwQPrUayIfjf6egbffiFwihjag&s",
+                number: 10,
+                date: "17/12/2024, 09:45:00",
+                status: "พร้อมจับฉลาก"
+            }
         ];
 
         let gifts = [];
@@ -187,6 +335,45 @@
             localStorage.setItem('currentNumber', currentNumber);
         };
 
+        // แสดง notification
+        function showNotification(message, type = 'success') {
+            // ลบ notification เก่าถ้ามี
+            const oldNotification = document.querySelector('.save-success');
+            if (oldNotification) {
+                oldNotification.remove();
+            }
+
+            // สร้าง notification ใหม่
+            const notification = document.createElement('div');
+            notification.className = 'save-success';
+            notification.innerHTML = `
+                <div class="success-checkmark"></div>
+                <span>${message}</span>
+            `;
+
+            // เพิ่มเข้าไปใน body
+            document.body.appendChild(notification);
+
+            // ลบออกหลังจาก 3 วินาที
+            setTimeout(() => {
+                notification.style.animation = 'slideIn 0.5s ease-out reverse';
+                setTimeout(() => notification.remove(), 500);
+            }, 3000);
+        }
+
+        // อัพเดทปุ่มขณะบันทึก
+        function updateButtonState(button, loading = true) {
+            const originalContent = button.innerHTML;
+            if (loading) {
+                button.disabled = true;
+                button.innerHTML = '<div class="loading-spinner"></div>';
+            } else {
+                button.disabled = false;
+                button.innerHTML = originalContent;
+            }
+            return originalContent;
+        }
+
         // เพิ่มฟังก์ชันการลบของขวัญ
         function deleteGift(number) {
             if (confirm('คุณต้องการลบของขวัญนี้ใช่หรือไม่?')) {
@@ -196,7 +383,7 @@
                     updateGiftList();
                     updateCount();
                     saveToLocalStorage();
-                    alert('ลบของขวัญสำเร็จ');
+                    showNotification('ลบของขวัญสำเร็จ');
                 }
             }
         }
@@ -207,7 +394,7 @@
                 drawnHistory = [];
                 updateHistory();
                 saveToLocalStorage();
-                alert('ลบประวัติสำเร็จ');
+                showNotification('ลบประวัติสำเร็จ');
             }
         }
 
@@ -221,8 +408,26 @@
                 updateHistory();
                 updateCount();
                 saveToLocalStorage();
-                alert('รีเซ็ตข้อมูลสำเร็จ');
+                showNotification('รีเซ็ตข้อมูลสำเร็จ');
             }
+        }
+
+        // ฟังก์ชันโหลดข้อมูลทดสอบ
+        function loadTestGift() {
+            const button = event.currentTarget;
+            const originalContent = updateButtonState(button, true);
+
+            setTimeout(() => {
+                const gift = { ...testGift, number: currentNumber++ };
+                gifts.push(gift);
+                updateGiftList();
+                updateCount();
+                saveToLocalStorage();
+                
+                updateButtonState(button, false);
+                showNotification('เพิ่มข้อมูลทดสอบสำเร็จ');
+                showPage('giftListPage');
+            }, 1000);
         }
 
         // อัพเดทรายการของขวัญ
@@ -233,7 +438,7 @@
                         <button onclick="deleteGift(${gift.number})" 
                                 class="text-red-600 hover:text-red-800">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 000-1-1z" clip-rule="evenodd" />
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                             </svg>
                         </button>
                     </div>
@@ -332,20 +537,27 @@
         // บันทึกของขวัญ
         $('giftForm').onsubmit = function(e) {
             e.preventDefault();
+            const submitButton = this.querySelector('button[type="submit"]');
+            const originalContent = updateButtonState(submitButton, true);
+
             const reader = new FileReader();
             reader.onload = function(e) {
-                gifts.push({
-                    name: $('name').value,
-                    image: e.target.result,
-                    number: currentNumber++,
-                    date: new Date().toLocaleString('th-TH'),
-                    status: "พร้อมจับฉลาก"
-                });
-                updateCount();
-                saveToLocalStorage();
-                this.reset();
-                $('preview').classList.add('hidden');
-                alert('บันทึกสำเร็จ');
+                setTimeout(() => {
+                    gifts.push({
+                        name: $('name').value,
+                        image: e.target.result,
+                        number: currentNumber++,
+                        date: new Date().toLocaleString('th-TH'),
+                        status: "พร้อมจับฉลาก"
+                    });
+                    updateCount();
+                    saveToLocalStorage();
+                    this.reset();
+                    $('preview').classList.add('hidden');
+                    
+                    updateButtonState(submitButton, false);
+                    showNotification('บันทึกข้อมูลสำเร็จ');
+                }, 1000);
             }.bind(this);
             reader.readAsDataURL($('image').files[0]);
         };
@@ -365,7 +577,7 @@
         // จับฉลาก
         $('drawButton').onclick = function() {
             if(gifts.length === 0) {
-                alert('ไม่มีของขวัญเหลือแล้ว');
+                showNotification('ไม่มีของขวัญเหลือแล้ว', 'error');
                 return;
             }
             
@@ -404,7 +616,7 @@
                 $('resultName').textContent = selectedGift.name;
                 $('resultNumber').textContent = `หมายเลข: ${selectedGift.number}`;
 
-                drawnHistory.push(selectedGift);
+                drawnHistory.push({...selectedGift});
                 gifts.splice(randomIndex, 1);
                 createConfetti();
                 updateCount();
@@ -413,6 +625,7 @@
 
                 setTimeout(() => {
                     $('drawButton').disabled = false;
+                    showNotification('จับฉลากสำเร็จ! 🎉');
                 }, 3000);
             }
         };
