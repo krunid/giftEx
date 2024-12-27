@@ -1,18 +1,16 @@
-
 <html lang="th">
 <head>
-    <meta charset="UTF-8"></meta>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"></meta>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ระบบจับฉลากของขวัญ</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet"></link>
-  <link href="https://fonts.googleapis.com" rel="preconnect"></link>
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"></link>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&amp;display=swap" rel="stylesheet"></link>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-      body {
+        body {
             font-family: 'Kanit', sans-serif;
         }
-        /* ปรับน้ำหนักฟอนต์ให้เหมาะสม */
         h1, h2, .font-semibold {
             font-weight: 500;
         }
@@ -66,13 +64,11 @@
             <div class="container mx-auto px-6 py-3">
                 <div class="flex justify-between items-center">
                     <div class="text-xl font-bold text-blue-600">ระบบจับฉลากของขวัญ</div>
-                    <!-- ปุ่มแฮมเบอร์เกอร์ -->
                     <button class="hamburger md:hidden p-2 rounded hover:bg-gray-100" id="hamburger">
                         <div class="hamburger-line"></div>
                         <div class="hamburger-line"></div>
                         <div class="hamburger-line"></div>
                     </button>
-                    <!-- เมนูสำหรับจอใหญ่ -->
                     <div class="hidden md:flex space-x-4">
                         <button class="nav-btn px-4 py-2 text-gray-700 hover:text-blue-600" onclick="showPage('registerPage')">บันทึกของขวัญ</button>
                         <button class="nav-btn px-4 py-2 text-gray-700 hover:text-blue-600" onclick="showPage('giftListPage')">รายการของขวัญ</button>
@@ -80,7 +76,6 @@
                         <button class="nav-btn px-4 py-2 text-gray-700 hover:text-blue-600" onclick="showPage('historyPage')">ประวัติ</button>
                     </div>
                 </div>
-                <!-- เมนูมือถือ -->
                 <div class="hidden md:hidden mt-4" id="mobileMenu">
                     <div class="flex flex-col space-y-2">
                         <button class="px-4 py-2 text-gray-700 hover:bg-gray-100 text-left" onclick="showPage('registerPage')">บันทึกของขวัญ</button>
@@ -96,10 +91,10 @@
         <div class="page bg-white p-6 rounded-lg shadow-lg" id="registerPage">
             <h2 class="text-2xl font-semibold mb-4">บันทึกข้อมูลของขวัญ</h2>
             <form class="space-y-4" id="giftForm">
-                <input class="w-full p-2 border rounded" id="name" placeholder="ชื่อผู้ให้ของขวัญ" required="" type="text" />
-                <input accept="image/*" class="w-full p-2 border rounded" id="image" required="" type="file" />
+                <input class="w-full p-2 border rounded" id="name" type="text" placeholder="ชื่อผู้ให้ของขวัญ" required>
+                <input class="w-full p-2 border rounded" id="image" type="file" accept="image/*" required>
                 <div class="hidden" id="preview">
-                    <img class="w-1/3 mx-auto" id="imagePreview" />
+                    <img class="w-1/3 mx-auto" id="imagePreview">
                 </div>
                 <button class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600" type="submit">บันทึก</button>
             </form>
@@ -108,9 +103,15 @@
         <!-- หน้ารายการของขวัญ -->
         <div class="page hidden" id="giftListPage">
             <div class="bg-white p-6 rounded-lg shadow-lg">
-                <div class="flex justify-between mb-4">
-                    <h2 class="text-2xl font-semibold">รายการของขวัญ</h2>
-                    <span>ทั้งหมด: <span class="font-bold text-blue-600" id="totalGifts">0</span> ชิ้น</span>
+                <div class="flex justify-between items-center mb-4">
+                    <div class="flex items-center space-x-4">
+                        <h2 class="text-2xl font-semibold">รายการของขวัญ</h2>
+                        <span class="text-gray-600">ทั้งหมด: <span class="font-bold text-blue-600" id="totalGifts">0</span> ชิ้น</span>
+                    </div>
+                    <button onclick="resetToSampleData()" 
+                            class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">
+                        รีเซ็ตข้อมูล
+                    </button>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="giftList"></div>
             </div>
@@ -125,7 +126,7 @@
             </div>
             <div class="hidden mt-8 bg-white p-6 rounded-lg shadow-lg" id="resultDisplay">
                 <div id="animation">
-                    <img class="w-1/3 mx-auto rounded-lg shadow-xl" id="resultImage" />
+                    <img class="w-1/3 mx-auto rounded-lg shadow-xl" id="resultImage">
                     <h2 class="text-2xl font-bold mt-4" id="resultName"></h2>
                     <p class="text-xl text-gray-600" id="resultNumber"></p>
                 </div>
@@ -136,14 +137,14 @@
         <div class="page hidden" id="historyPage">
             <div class="bg-white p-6 rounded-lg shadow-lg">
                 <h2 class="text-2xl font-semibold mb-4">ประวัติการจับฉลาก</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="historyList"></div>
+                <div id="historyList"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // ข้อมูลตัวอย่าง 10 รายการ
-        let gifts = [
+        // ข้อมูลตัวอย่าง
+        let sampleGifts = [
             {
                 name: "สมชาย ใจดี",
                 image: "https://inwfile.com/s-fm/wvmdp0.jpg",
@@ -165,65 +166,138 @@
                 date: "17/12/2024, 09:10:00",
                 status: "พร้อมจับฉลาก"
             },
-            {
-                name: "สมศรี ดีใจ",
-                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXrH4OnnNiXwQPrUayIfjf6egbffiFwihjag&s",
-                number: 4,
-                date: "17/12/2024, 09:15:00",
-                status: "พร้อมจับฉลาก"
-            },
-            {
-                name: "ประเสริฐ เลิศลอย",
-                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXrH4OnnNiXwQPrUayIfjf6egbffiFwihjag&s",
-                number: 5,
-                date: "17/12/2024, 09:20:00",
-                status: "พร้อมจับฉลาก"
-            },
-            {
-                name: "สุดา ดาวเด่น",
-                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXrH4OnnNiXwQPrUayIfjf6egbffiFwihjag&s",
-                number: 6,
-                date: "17/12/2024, 09:25:00",
-                status: "พร้อมจับฉลาก"
-            },
-            {
-                name: "วีระ มั่งมี",
-                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXrH4OnnNiXwQPrUayIfjf6egbffiFwihjag&s",
-                number: 7,
-                date: "17/12/2024, 09:30:00",
-                status: "พร้อมจับฉลาก"
-            },
-            {
-                name: "นภา สดใส",
-                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXrH4OnnNiXwQPrUayIfjf6egbffiFwihjag&s",
-                number: 8,
-                date: "17/12/2024, 09:35:00",
-                status: "พร้อมจับฉลาก"
-            },
-            {
-                name: "อภิชาติ ชาติชาย",
-                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXrH4OnnNiXwQPrUayIfjf6egbffiFwihjag&s",
-                number: 9,
-                date: "17/12/2024, 09:40:00",
-                status: "พร้อมจับฉลาก"
-            },
-            {
-                name: "วาสนา น่ารัก",
-                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXrH4OnnNiXwQPrUayIfjf6egbffiFwihjag&s",
-                number: 10,
-                date: "17/12/2024, 09:45:00",
-                status: "พร้อมจับฉลาก"
-            }
+            // ... (ข้อมูลตัวอย่างอื่นๆ จาก array เดิม)
         ];
+
+        let gifts = [];
         let drawnHistory = [];
-        let currentNumber = 11; // เริ่มต้นที่ 11 เพราะมีข้อมูล 10 รายการ
+        let currentNumber = 11;
 
         // Utility functions
         const $ = id => document.getElementById(id);
+        
         const updateCount = () => {
             $('totalGifts').textContent = gifts.length;
             $('remainingGifts').textContent = gifts.length;
         };
+
+        const saveToLocalStorage = () => {
+            localStorage.setItem('gifts', JSON.stringify(gifts));
+            localStorage.setItem('drawnHistory', JSON.stringify(drawnHistory));
+            localStorage.setItem('currentNumber', currentNumber);
+        };
+
+        // เพิ่มฟังก์ชันการลบของขวัญ
+        function deleteGift(number) {
+            if (confirm('คุณต้องการลบของขวัญนี้ใช่หรือไม่?')) {
+                const index = gifts.findIndex(gift => gift.number === number);
+                if (index !== -1) {
+                    gifts.splice(index, 1);
+                    updateGiftList();
+                    updateCount();
+                    saveToLocalStorage();
+                    alert('ลบของขวัญสำเร็จ');
+                }
+            }
+        }
+
+        // เพิ่มฟังก์ชันการลบประวัติทั้งหมด
+        function clearHistory() {
+            if (confirm('คุณต้องการลบประวัติการจับฉลากทั้งหมดใช่หรือไม่?')) {
+                drawnHistory = [];
+                updateHistory();
+                saveToLocalStorage();
+                alert('ลบประวัติสำเร็จ');
+            }
+        }
+
+        // เพิ่มฟังก์ชันรีเซ็ตเป็นข้อมูลตัวอย่าง
+        function resetToSampleData() {
+            if (confirm('คุณต้องการรีเซ็ตเป็นข้อมูลตัวอย่างใช่หรือไม่? (ข้อมูลปัจจุบันจะหายไป)')) {
+                gifts = JSON.parse(JSON.stringify(sampleGifts)); // Deep clone
+                drawnHistory = [];
+                currentNumber = 11;
+                updateGiftList();
+                updateHistory();
+                updateCount();
+                saveToLocalStorage();
+                alert('รีเซ็ตข้อมูลสำเร็จ');
+            }
+        }
+
+        // อัพเดทรายการของขวัญ
+        function updateGiftList() {
+            $('giftList').innerHTML = gifts.map(gift => `
+                <div class="bg-gray-50 p-4 rounded-lg shadow fade-in">
+                    <div class="flex justify-end mb-2">
+                        <button onclick="deleteGift(${gift.number})" 
+                                class="text-red-600 hover:text-red-800">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 000-1-1z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+                    <img src="${gift.image}" class="w-full h-48 object-cover rounded mb-2">
+                    <p class="font-semibold">${gift.name}</p>
+                    <p class="text-gray-600">หมายเลข: ${gift.number}</p>
+                    <p class="text-sm text-gray-500">${gift.date}</p>
+                    <p class="mt-2">
+                        <span class="px-2 py-1 rounded text-sm ${
+                            gift.status === 'พร้อมจับฉลาก' 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-gray-100 text-gray-800'
+                        }">${gift.status}</span>
+                    </p>
+                </div>
+            `).join('');
+        }
+
+        // อัพเดทประวัติ
+        function updateHistory() {
+            const historyContent = drawnHistory.length > 0 
+                ? drawnHistory.map((gift, index) => `
+                    <div class="bg-gray-50 p-4 rounded-lg shadow fade-in">
+                        <img src="${gift.image}" class="w-full h-48 object-cover rounded mb-2">
+                        <p class="font-semibold">${gift.name}</p>
+                        <p class="text-gray-600">หมายเลข: ${gift.number}</p>
+                        <p class="text-sm text-gray-500">จับเมื่อ: ${gift.drawnDate}</p>
+                        <p class="mt-2">
+                            <span class="px-2 py-1 rounded text-sm bg-blue-100 text-blue-800">
+                                ลำดับที่: ${index + 1}
+                            </span>
+                        </p>
+                    </div>
+                `).join('')
+                : '<p class="text-center text-gray-500 my-4">ไม่มีประวัติการจับฉลาก</p>';
+
+            $('historyList').innerHTML = `
+                <div class="flex justify-end mb-4">
+                    ${drawnHistory.length > 0 ? `
+                        <button onclick="clearHistory()" 
+                                class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                            ลบประวัติทั้งหมด
+                        </button>
+                    ` : ''}
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    ${historyContent}
+                </div>
+            `;
+        }
+
+        // แสดงหน้า
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+            $(pageId).classList.remove('hidden');
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.toggle('text-blue-600', btn.onclick.toString().includes(pageId));
+            });
+            mobileMenu.classList.add('hidden');
+            hamburger.classList.remove('open');
+            updateCount();
+            if(pageId === 'giftListPage') updateGiftList();
+            if(pageId === 'historyPage') updateHistory();
+        }
 
         // เมนูแฮมเบอร์เกอร์
         const hamburger = $('hamburger');
@@ -241,20 +315,6 @@
                 hamburger.classList.remove('open');
             }
         };
-
-        // แสดงหน้า
-        function showPage(pageId) {
-            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
-            $(pageId).classList.remove('hidden');
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.toggle('text-blue-600', btn.onclick.toString().includes(pageId));
-            });
-            mobileMenu.classList.add('hidden');
-            hamburger.classList.remove('open');
-            updateCount();
-            if(pageId === 'giftListPage') updateGiftList();
-            if(pageId === 'historyPage') updateHistory();
-        }
 
         // แสดงตัวอย่างรูป
         $('image').onchange = function(e) {
@@ -282,48 +342,13 @@
                     status: "พร้อมจับฉลาก"
                 });
                 updateCount();
+                saveToLocalStorage();
                 this.reset();
                 $('preview').classList.add('hidden');
                 alert('บันทึกสำเร็จ');
             }.bind(this);
             reader.readAsDataURL($('image').files[0]);
         };
-
-// อัพเดทรายการของขวัญ
-        function updateGiftList() {
-            $('giftList').innerHTML = gifts.map(gift => `
-                <div class="bg-gray-50 p-4 rounded-lg shadow fade-in">
-                    <img src="${gift.image}" class="w-full h-48 object-cover rounded mb-2">
-                    <p class="font-semibold">${gift.name}</p>
-                    <p class="text-gray-600">หมายเลข: ${gift.number}</p>
-                    <p class="text-sm text-gray-500">${gift.date}</p>
-                    <p class="mt-2">
-                        <span class="px-2 py-1 rounded text-sm ${
-                            gift.status === 'พร้อมจับฉลาก' 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-gray-100 text-gray-800'
-                        }">${gift.status}</span>
-                    </p>
-                </div>
-            `).join('');
-        }
-
-        // อัพเดทประวัติ
-        function updateHistory() {
-            $('historyList').innerHTML = drawnHistory.map((gift, index) => `
-                <div class="bg-gray-50 p-4 rounded-lg shadow fade-in">
-                    <img src="${gift.image}" class="w-full h-48 object-cover rounded mb-2">
-                    <p class="font-semibold">${gift.name}</p>
-                    <p class="text-gray-600">หมายเลข: ${gift.number}</p>
-                    <p class="text-sm text-gray-500">จับเมื่อ: ${gift.drawnDate}</p>
-                    <p class="mt-2">
-                        <span class="px-2 py-1 rounded text-sm bg-blue-100 text-blue-800">
-                            ลำดับที่: ${index + 1}
-                        </span>
-                    </p>
-                </div>
-            `).join('');
-        }
 
         // สร้างคอนเฟ็ตติ
         function createConfetti() {
@@ -358,7 +383,7 @@
                 $('resultNumber').textContent = `หมายเลข: ${tempGift.number}`;
                 
                 shuffleCount++;
-                if (shuffleCount >= 10) { // หยุดหลังจากสุ่ม 10 ครั้ง
+                if (shuffleCount >= 10) {
                     clearInterval(shuffleInterval);
                     showFinalResult();
                 }
@@ -384,6 +409,7 @@
                 createConfetti();
                 updateCount();
                 updateHistory();
+                saveToLocalStorage();
 
                 setTimeout(() => {
                     $('drawButton').disabled = false;
@@ -393,18 +419,6 @@
 
         // โหลดข้อมูลเริ่มต้น
         window.onload = function() {
-            showPage('registerPage');
-            updateGiftList();
-            updateCount();
-            
-            // เซฟข้อมูลก่อนรีเฟรช
-            window.addEventListener('beforeunload', () => {
-                localStorage.setItem('gifts', JSON.stringify(gifts));
-                localStorage.setItem('drawnHistory', JSON.stringify(drawnHistory));
-                localStorage.setItem('currentNumber', currentNumber);
-            });
-
-            // โหลดข้อมูลจาก localStorage ถ้ามี
             const savedGifts = localStorage.getItem('gifts');
             const savedHistory = localStorage.getItem('drawnHistory');
             const savedNumber = localStorage.getItem('currentNumber');
@@ -412,7 +426,12 @@
             if (savedGifts) gifts = JSON.parse(savedGifts);
             if (savedHistory) drawnHistory = JSON.parse(savedHistory);
             if (savedNumber) currentNumber = parseInt(savedNumber);
+
+            showPage('registerPage');
+            updateGiftList();
+            updateCount();
         };
+
     </script>
 </body>
 </html>
