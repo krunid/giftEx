@@ -361,18 +361,106 @@
             }, 3000);
         }
 
-        // อัพเดทปุ่มขณะบันทึก
+// อัพเดทปุ่มขณะบันทึก
         function updateButtonState(button, loading = true) {
-            const originalContent = button.innerHTML;
+            if (!button) return null;
+
+            // เก็บข้อมูลเดิมของปุ่มไว้
+            const buttonState = {
+                originalContent: button.innerHTML,
+                originalDisabled: button.disabled
+            };
+
             if (loading) {
                 button.disabled = true;
-                button.innerHTML = '<div class="loading-spinner"></div>';
+                button.innerHTML = `
+                    <div class="flex items-center justify-center">
+                        <div class="loading-spinner mr-2"></div>
+                        <span>กำลังดำเนินการ...</span>
+                    </div>
+                `;
             } else {
-                button.disabled = false;
-                button.innerHTML = originalContent;
+                button.disabled = buttonState.originalDisabled;
+                button.innerHTML = buttonState.originalContent;
             }
-            return originalContent;
+
+            return buttonState;
         }
+
+        // ฟังก์ชันโหลดข้อมูลทดสอบ
+        function loadTestGift() {
+            const button = event.currentTarget;
+            if (button.disabled) return; // ป้องกันการกดซ้ำ
+
+            const buttonState = updateButtonState(button, true);
+            if (!buttonState) return;
+
+            try {
+                setTimeout(() => {
+                    const gift = { ...testGift, number: currentNumber++ };
+                    gifts.push(gift);
+                    updateGiftList();
+                    updateCount();
+                    saveToLocalStorage();
+                    
+                    updateButtonState(button, false);
+                    showNotification('เพิ่มข้อมูลทดสอบสำเร็จ');
+                    showPage('giftListPage');
+                }, 1000);
+            } catch (error) {
+                console.error('เกิดข้อผิดพลาด:', error);
+                updateButtonState(button, false);
+                showNotification('เกิดข้อผิดพลาด กรุณาลองใหม่', 'error');
+            }
+        }
+
+        // บันทึกของขวัญ
+        $('giftForm').onsubmit = function(e) {
+            e.preventDefault();
+            const submitButton = this.querySelector('button[type="submit"]');
+            if (submitButton.disabled) return; // ป้องกันการกดซ้ำ
+
+            const buttonState = updateButtonState(submitButton, true);
+            if (!buttonState) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    setTimeout(() => {
+                        gifts.push({
+                            name: $('name').value,
+                            image: e.target.result,
+                            number: currentNumber++,
+                            date: new Date().toLocaleString('th-TH'),
+                            status: "พร้อมจับฉลาก"
+                        });
+                        updateCount();
+                        saveToLocalStorage();
+                        this.reset();
+                        $('preview').classList.add('hidden');
+                        
+                        updateButtonState(submitButton, false);
+                        showNotification('บันทึกข้อมูลสำเร็จ');
+                    }, 1000);
+                } catch (error) {
+                    console.error('เกิดข้อผิดพลาด:', error);
+                    updateButtonState(submitButton, false);
+                    showNotification('เกิดข้อผิดพลาด กรุณาลองใหม่', 'error');
+                }
+            }.bind(this);
+
+            reader.onerror = function() {
+                updateButtonState(submitButton, false);
+                showNotification('เกิดข้อผิดพลาดในการอ่านไฟล์ กรุณาลองใหม่', 'error');
+            };
+
+            try {
+                reader.readAsDataURL($('image').files[0]);
+            } catch (error) {
+                updateButtonState(submitButton, false);
+                showNotification('กรุณาเลือกไฟล์รูปภาพ', 'error');
+            }
+        };
 
         // เพิ่มฟังก์ชันการลบของขวัญ
         function deleteGift(number) {
